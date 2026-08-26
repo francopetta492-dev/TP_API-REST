@@ -1,18 +1,20 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace TP_API_PETTA_FRANCO.Controllers;
+namespace TP_API_PETTA_FRANCO;
 
 [ApiController]
 [Route("[controller]")]
 public class MascotaController : ControllerBase
 {
-    private static readonly List<Mascota> mascotas = new() 
+    private static readonly List<Mascota> mascotas = new()
     {
-        new Perro{Id = 1, Nombre = "Firulais", Edad = 5, Raza = "Labrador"},
-        new Perro{Id = 2, Nombre = "Rocky", Edad = 8, Raza = "Salchicha"},
-        new Gato{Id = 3, Nombre = "Luna", Edad = 3, Color = "Naranja"},
-        new Gato{Id = 4, Nombre = "Michi", Edad = 10, Color = "Marron"},  
+        new Perro { Id = 1, Nombre = "Firulas", Edad = 5, Raza = "Labrador" },
+        new Gato { Id = 2, Nombre = "Luna", Edad = 3, Color = "Naranja" },
+        new Perro { Id = 3, Nombre = "Rocky", Edad = 8, Raza = "Salchicha" },
+        new Gato { Id = 4, Nombre = "Michi", Edad = 10, Color = "Negro" }
     };
+
+
     private readonly ILogger<MascotaController> _logger;
 
     public MascotaController(ILogger<MascotaController> logger)
@@ -26,67 +28,14 @@ public class MascotaController : ControllerBase
         return Ok(mascotas);
     }
 
-    [HttpGet("{Id}")]
-    public IActionResult GetById(int Id) 
+    [HttpGet("{id}")]
+    public IActionResult GetById(int id)
     {
         foreach(Mascota m in mascotas)
         {
-            if(m.Id == Id)
+            if(m.Id == id)
             {
                 return Ok(m);
-            }      
-        }
-        return NotFound("Producto no entontrado");   
-    }
-
-    [HttpPost("Perros")]
-    public IActionResult Create([FromBody]Perro NuevoPerro)
-    {
-        mascotas.Add(NuevoPerro);
-        return Ok("Mascota creada Exitosamente");
-    }
-
-    [HttpPost("Gatos")]
-    public IActionResult Create([FromBody]Gato NuevoGato)
-    {
-        mascotas.Add(NuevoGato);
-        return Ok("Mascota creada Exitosamente");
-    }
-
-     [HttpPut("{id}")]
-    public IActionResult Update(int id, [FromBody]Mascota mascotaActualizada)
-    {
-        foreach(Mascota m in mascotas)
-        {
-            if(m.Id == id)
-            {
-                m.Nombre = mascotaActualizada.Nombre;
-                m.Edad = mascotaActualizada.Edad;
-
-                if(m is Perro)
-                {
-                    ((Perro)m).Raza = ((Perro)mascotaActualizada).Raza;
-                }
-                else if(m is Gato)
-                {
-                    ((Gato)m).Color = ((Gato)mascotaActualizada).Color;
-                }
-
-                return Ok("Mascota actualizada exitosamente");
-            }
-        }
-        return NotFound("Mascota no encontrada");
-    }
-
-    [HttpDelete("{id}")]
-    public IActionResult Delete(int id)
-    {
-        foreach(Mascota m in mascotas)
-        {
-            if(m.Id == id)
-            {
-                mascotas.Remove(m);
-                return Ok("Mascota eliminada exitosamente");
             }
         }
         return NotFound("Mascota no encontrada");
@@ -137,4 +86,69 @@ public class MascotaController : ControllerBase
 
         return Ok(tipos);
     }
+    
+    [HttpPost("perros")]
+    public IActionResult CreatePerro([FromBody]Perro nuevoPerro)
+    {
+        mascotas.Add(nuevoPerro);
+        return Ok("Perro creado exitosamente");
+    }
+
+    [HttpPost("gatos")]
+    public IActionResult CreateGatos([FromBody]Gato nuevoGato)
+    {
+        mascotas.Add(nuevoGato);
+        return Ok("Gato creado exitosamente");
+    }
+
+    [HttpPut("perro/{id}")]
+    public IActionResult UpdatePerro(int id, [FromBody] Perro perroActualizado)
+    {
+        foreach (Mascota m in mascotas)
+        {
+            if (m.Id == id && m is Perro perro)
+            {
+                perro.Nombre = perroActualizado.Nombre;
+                perro.Edad = perroActualizado.Edad;
+                perro.Raza = perroActualizado.Raza;
+
+                return Ok("Perro actualizado exitosamente");
+            }
+        }
+
+        return NotFound("Perro no encontrado");
+    }
+
+    [HttpPut("gato/{id}")]
+    public IActionResult UpdateGato(int id, [FromBody] Gato gatoActualizado)
+    {
+        foreach (Mascota m in mascotas)
+        {
+            if (m.Id == id && m is Gato gato)
+            {
+                gato.Nombre = gatoActualizado.Nombre;
+                gato.Edad = gatoActualizado.Edad;
+                gato.Color = gatoActualizado.Color;
+
+                return Ok("Gato actualizado exitosamente");
+            }
+        }
+
+        return NotFound("Gato no encontrado");
+    }
+
+    [HttpDelete("{id}")]
+    public IActionResult Delete(int id)
+    {
+        foreach(Mascota m in mascotas)
+        {
+            if(m.Id == id)
+            {
+                mascotas.Remove(m);
+                return Ok("Mascota eliminada exitosamente");
+            }
+        }
+        return NotFound("Mascota no encontrada");
+    }
+    
 }
